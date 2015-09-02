@@ -3,9 +3,10 @@ echo "export AWS_SECRET_ACCESS_KEY='$AWS_SECRET_ACCESS_KEY'" >>~/.profile
 echo "export AWS_DEFAULT_REGION='$AWS_DEFAULT_REGION'" >>~/.profile
 echo "export LANG='en_US.UTF-8'" >>~/.profile
 echo "export LC_ALL='en_US.UTF-8'" >>~/.profile
-echo "export PATH='$HOME/bin:$PATH'" >>~/.profile
+echo "export PATH='~/bin:$PATH'" >>~/.profile
 echo "export BUCKET_NAME='$BUCKET_NAME'" >>~/.profile
 echo "export BUCKET_URL='s3://$BUCKET_NAME'" >>~/.profile
+echo "export LEIN_ROOT='true'" >>~/.profile
 
 # Prepare general tools (git and AWS)
 sudo apt-get -y update 
@@ -24,10 +25,10 @@ sudo apt-get -y update
 sudo apt-get -y install oracle-java8-installer
 
 # Prepare lein
-cd $HOME
-mkdir -p $HOME/bin
-curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein >$HOME/bin/lein
-chmod 755 $HOME/bin/lein
+cd ~
+mkdir -p ~/bin
+curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein >~/bin/lein
+chmod 755 ~/bin/lein
 
 # Clone core.matrix repo
 git clone https://github.com/mikera/core.matrix
@@ -42,10 +43,13 @@ echo "I am a dump file" >"$GIT_HASH.dump"
 
 aws s3 sync ./ $BUCKET_URL --exclude "*"  --include "$GIT_HASH.html" --include "$GIT_HASH.dump" 
 
-# Generate the new index.html file
+# Generate the new index.html file (With machine Info)
 
-LINKS=`aws s3 ls $BUCKET_URL | \
-        grep -p ".dump$" | tr -s ' ' | cut -f4 -d ' ' | \
+cat /proc/cpuinfo >machine.txt
+cat /proc/meminfo >>machine.txt
+MACHINE_INFO=`cat machine.txt | perl -e 'while(<>){ chomp; print "<p>$_</p>"; }'`
+LINKS=`aws s3 ls $BUCKET_URL | grep ".dump$" | \
+        tr -s ' ' | cut -f4 -d ' ' | \
         perl -e 'while(<>){ chomp; print "<a href= \"$_\">$_</a>\n" }'`
 
 read -d '' HTML << EOF
@@ -54,12 +58,19 @@ read -d '' HTML << EOF
 <title>core.matrix benchmarks</title>
 </head>
 <body>
+<div>
+<h2>CPU Specs</h2>
+<p>`cat /proc/cpuinfo`</p>
+<p>`cat /proc/meminfo | head -n 1`</p>
+</div>
+<div>
 $LINKS
+</div>
 </body></html>
 EOF
 
 echo "$HTML" >index.html
-aws s3 sync ./index.html "$BUCKET_URL/index.html"
+aws s3 cp ./index.html "$BUCKET_URL/index.html"
 
 # Job's done, shutdown and termiante
 sudo shutdown -h now
