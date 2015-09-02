@@ -48,12 +48,15 @@ run: bucket.txt instance_type.txt key_pair.txt
 		fi \
 	    ) \
 	    --instance-initiated-shutdown-behavior 'terminate' \
-	    --user-data file://user-data.tmp
+	    --user-data file://user-data.tmp >instance.json
 	rm user-data.tmp
 
 # Task to clear all config files
 clean:
 	rm -rf bucket.txt instance_type.txt key_pair.txt
+
+view: bucket.txt
+	./view_page $$(cat $<)							
 
 # Task to make s3 bucket public and website
 # Reference: http://tiffanybbrown.com/2014/09/making-all-objects-in-an-s3-bucket-public-by-default/

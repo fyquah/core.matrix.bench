@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+if [ $# != "1" ];
+then
+    echo "Expected only one argument!";
+    echo "Usage: $0 BUCKET_NAME";
+    exit 1;
+fi
+
+BUCKET_NAME=$1;
+NAME=`echo -n $(uname)`
+SITE_URL="http://$BUCKET_NAME.s3-website-$AWS_DEFAULT_REGION.amazonaws.com"
+
+if [ "$NAME" == 'Darwin' ];
+then
+    open $SITE_URL 
+elif [ "$NAME" == 'Linux' ];
+then
+    if [ which xdg-open > /dev/null ];
+    then
+        xdg-open $SITE_URL
+    elif [ which gnome-open > /dev/null ];
+    then
+        gnome-open $SITE_URL
+    else
+        echo "Can't identify open command, copy the following URL to your web browser:"
+        echo $SITE_URL
+    fi
+else
+    echo "Can't identify open command, copy the following URL to your web browser:"
+    echo $SITE_URL
+fi
