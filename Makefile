@@ -27,6 +27,7 @@ endif
 # The bucket is not public by default, but you can easily change that in the s3 console
 configure: bucket.txt instance_type.txt key_pair.txt
 
+# Task to run a single benchmark
 run: bucket.txt instance_type.txt key_pair.txt
 	printf "\
 	#!/bin/bash \n\
@@ -50,8 +51,25 @@ run: bucket.txt instance_type.txt key_pair.txt
 	    --user-data file://user-data.tmp
 	rm user-data.tmp
 
+# Task to clear all config files
 clean:
 	rm -rf bucket.txt instance_type.txt key_pair.txt
+
+# Task to make s3 bucket public
+# Reference: http://tiffanybbrown.com/2014/09/making-all-objects-in-an-s3-bucket-public-by-default/
+public: bucket.txt
+	echo -n "{ \
+	    \"Version\": \"2012-10-17\",  \
+	    \"Statement\": [{  \
+		\"Sid\": \"MakeItPublic\",  \
+		\"Effect\": \"Allow\",  \
+		\"Principal\": \"*\",  \
+		\"Action\": \"s3:GetObject\",  \
+		\"Resource\": \"arn:aws:s3:::`cat $<`/*\"  \
+	    }]  \
+	}" >$@.policy.tmp.json
+	aws s3api put-bucket-policy --bucket $$(cat $<) --policy "file://$@.policy.tmp.json"
+	rm $@.policy.tmp.json
 
 # *********************
 # File / Configurations Dependencies
