@@ -4,15 +4,21 @@ if [ $# != 1 ]
 then
     echo "Expected 1 argument!";
     echo "Usage: ";
-    echo "./create_bucket BUCKET_NAME";
+    echo "$0 filename";
     exit 1;
 fi
 
-BUCKET_NAME="$1"
+FILE_NAME="$1"
+read -p "Enter bucket name: " BUCKET_NAME
+
+if [ -z "$BUCKET_NAME" ]; then
+    BUCKET_NAME="core.matrix.bench-marks"
+fi
+
 BUCKET_URL="s3://$BUCKET_NAME"
 
 # Decide whether to create a bucket or not
-aws s3 ls $BUCKET_NAME
+aws s3 ls $BUCKET_NAME &>/dev/null # don't care bout the output, interested only in status code
 
 if [ $? = "0" ]
 then
@@ -33,3 +39,5 @@ then
 fi
 
 aws s3 mb $BUCKET_URL
+
+echo -n $BUCKET_NAME >$FILE_NAME

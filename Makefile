@@ -3,10 +3,6 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := run
 
-ifndef BUCKET_NAME
-    BUCKET_NAME=core.matrix.bench
-endif
-
 ifndef AWS_ACCESS_KEY_ID
     $(error AWS_ACCESS_KEY_ID is not set)
 endif
@@ -85,8 +81,7 @@ public: bucket.txt
 # *********************
 
 bucket.txt:
-	./create_bucket $(BUCKET_NAME)
-	echo -n '$(BUCKET_NAME)' >$@
+	./configure_bucket $@
 
 instance_type.txt:
 	./configure_instance_type $@
