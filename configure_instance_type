@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+DEFAULT_TYPE='t2.micro'
+
+if [ $# != '1' ]; then
+    echo "Expected single argument!";
+    echo "Usage: $0 file_name";
+    exit 1;
+fi
+
+echo "It is your responsibility to make sure that you are entering a valid instance type. No validation will be done by this script. For more information, please consult http://docs.aws.amazon.com/cli/latest/reference/ec2/run-instances.html"
+echo "NOTE: t1.micro is not supported!"
+
+read -p "What kind of instance do you want? (default: $DEFAULT_TYPE) " INSTANCE_TYPE
+
+if [[ -z "$INSTANCE_TYPE" ]]; then
+    INSTANCE_TYPE="$DEFAULT_TYPE"
+fi
+
+echo -n $INSTANCE_TYPE >$1;
+
+exit 0
