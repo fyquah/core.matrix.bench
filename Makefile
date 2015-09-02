@@ -39,7 +39,7 @@ run: bucket.txt instance_type.txt key_pair.txt
 	    --count 1 \
 	    --instance-type $$(cat $(word 2, $^)) \
 	    $$(KEY_NAME=`cat $(word 3, $^)`; \
-		if [[ -n "$$INSTANCE_TYPE" ]]; then \
+		if [[ -n "$$KEY_NAME" ]]; then \
 		    echo -n "--key-name $$KEY_NAME"; \
 		fi \
 	    ) \
