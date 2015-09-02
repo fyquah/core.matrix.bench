@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+if [ $# != 1 ]
+then
+    echo "Expected 1 argument!";
+    echo "Usage: ";
+    echo "./create_bucket BUCKET_NAME";
+    exit 1;
+fi
+
+BUCKET_NAME="$1"
+BUCKET_URL="s3://$BUCKET_NAME"
+
+# Decide whether to create a bucket or not
+aws s3 ls $BUCKET_NAME
+
+if [ $? = "0" ]
+then
+    while true; do
+        read -p "The bucket exists, do you want to overwrite it? (y/n)" res;
+        if [ "$res" = 'y' ]
+        then
+            aws s3 rb $BUCKET_URL --force
+            break
+        elif [ "$res" = "n" ]
+        then
+            echo "Not going to create a new bucket, terminating now!";
+            exit 0;
+        else
+            echo "Unregocnized response '$res' !"
+        fi
+    done
+fi
+
+aws s3 mb $BUCKET_URL
