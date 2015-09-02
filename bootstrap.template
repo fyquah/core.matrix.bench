@@ -37,9 +37,7 @@ GIT_HASH="$(git rev-parse HEAD | tr -d "\n")"
 
 # Run the benchmark suit
 lein deps
-echo "I am a HTML file" >"$GIT_HASH.html"
-echo "I am a dump file" >"$GIT_HASH.dump"
-# lein run -m clojure.core.matrix.docgen.bench "$GIT_HASH.html" "$GIT_HASH.dump"
+lein run -m clojure.core.matrix.docgen.bench "$GIT_HASH.html" "$GIT_HASH.dump"
 
 aws s3 sync ./ $BUCKET_URL --exclude "*"  --include "$GIT_HASH.html" --include "$GIT_HASH.dump" 
 
