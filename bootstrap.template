@@ -48,9 +48,10 @@ aws s3 sync ./ $BUCKET_URL --exclude "*"  --include "$GIT_HASH.html" --include "
 cat /proc/cpuinfo >machine.txt
 cat /proc/meminfo >>machine.txt
 MACHINE_INFO=`cat machine.txt | perl -e 'while(<>){ chomp; print "<p>$_</p>"; }'`
-LINKS=`aws s3 ls $BUCKET_URL | grep ".dump$" | \
-        tr -s ' ' | cut -f4 -d ' ' | \
-        perl -e 'while(<>){ chomp; print "<a href= \"$_\">$_</a>\n" }'`
+LINKS=`aws s3 ls s3://core.matrix.test | grep ".dump$" | \
+    perl -e 'while(<>){ chomp;s/\s+/\t/g;s/\.dump$//g; print $_, "\n"; }' | \
+    sort -k1,2 -r | \
+    awk '{ print "<p><a href=\"" $4 ".html\">" $1 "_" $2 "_" $4 "</a></p>" }'`
 
 read -d '' HTML << EOF
 <html>
@@ -59,12 +60,12 @@ read -d '' HTML << EOF
 </head>
 <body>
 <div>
-<h2>CPU Specs</h2>
-<p>`cat /proc/cpuinfo`</p>
-<p>`cat /proc/meminfo | head -n 1`</p>
+<h2>Bench Mark Files</h2>
+<div>$LINKS</div>
 </div>
 <div>
-$LINKS
+<h2>CPU Specs</h2>
+<div>$MACHINE_INFO</div>
 </div>
 </body></html>
 EOF
