@@ -55,7 +55,7 @@ run: bucket.txt instance_type.txt key_pair.txt
 clean:
 	rm -rf bucket.txt instance_type.txt key_pair.txt
 
-# Task to make s3 bucket public
+# Task to make s3 bucket public and website
 # Reference: http://tiffanybbrown.com/2014/09/making-all-objects-in-an-s3-bucket-public-by-default/
 public: bucket.txt
 	echo -n "{ \
@@ -70,6 +70,12 @@ public: bucket.txt
 	}" >$@.policy.tmp.json
 	aws s3api put-bucket-policy --bucket $$(cat $<) --policy "file://$@.policy.tmp.json"
 	rm $@.policy.tmp.json
+
+	# Configure bucket into a static website
+	aws s3 website "s3://$$(cat $<)" --index-document index.html --error-document error.html
+
+	# Upload error.html
+	aws s3 cp error.html "s3://$$(cat $<)/error.html"
 
 # *********************
 # File / Configurations Dependencies
