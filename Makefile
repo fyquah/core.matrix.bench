@@ -16,6 +16,16 @@ ifndef AWS_DEFAULT_REGION
 endif
 
 # *********************
+# Data store directories
+# *********************
+
+CONFIG_DIR=config
+INSTANCES_DIR=instances
+
+$(CONFIG_DIR) $(INSTANCES_DIR):
+	mkdir -p $@
+
+# *********************
 # Tasks
 # *********************
 
@@ -44,7 +54,7 @@ run: bucket.txt instance_type.txt key_pair.txt
 		fi \
 	    ) \
 	    --instance-initiated-shutdown-behavior 'terminate' \
-	    --user-data file://user-data.tmp >instance.json
+	    --user-data file://user-data.tmp >"$$(date "+%Y-%m-%d-%H-%M-%S-UTC").instance.json"
 	rm user-data.tmp
 
 # Task to clear all config files
