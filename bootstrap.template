@@ -60,7 +60,7 @@ read -d '' HTML << EOF
 </head>
 <body>
 <div>
-<h2>Bench Mark Files</h2>
+<h2>Benchmark Files</h2>
 <div>$LINKS</div>
 </div>
 <div>
