@@ -48,7 +48,7 @@ aws s3 sync ./ $BUCKET_URL --exclude "*"  --include "$GIT_HASH.html" --include "
 cat /proc/cpuinfo >machine.txt
 cat /proc/meminfo >>machine.txt
 MACHINE_INFO=`cat machine.txt | perl -e 'while(<>){ chomp; print "<p>$_</p>"; }'`
-LINKS=`aws s3 ls s3://core.matrix.test | grep ".dump$" | \
+LINKS=`aws s3 ls $BUCKET_URL | grep ".dump$" | \
     perl -e 'while(<>){ chomp;s/\s+/\t/g;s/\.dump$//g; print $_, "\n"; }' | \
     sort -k1,2 -r | \
     awk '{ print "<p><a href=\"" $4 ".html\">" $1 "_" $2 "_" $4 "</a></p>" }'`
