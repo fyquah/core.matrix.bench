@@ -1,2 +1,8 @@
+# Temporary files
 user-data.tmp
+instance.json
+
+# The configuration files
 bucket.txt
+instance_type.txt
+key_pair.txt
