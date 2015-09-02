@@ -1,11 +1,10 @@
 # core.matrix Benchmark Scripts
 
-A collection of scripts to benchmark [core.matrix](
-    https://github.com/mikera/core.matrix).
+A Makefile to benchmark [core.matrix](https://github.com/mikera/core.matrix).
 
 More concretely, this program spawns an AWS Ubuntu 14.04 cloud instance, prepare
 the environment (insalling Java, lein etc.) and run the core.matrix benchmarks,
-which are defined in the `clojure.core.matrix.docgen.bench` namespace ([here](https://github.com/mikera/core.matrix/blob/develop/src/dev/clojure/clojure/core/matrix/docgen/bench.clj)).
+which are defined in the `clojure.core.matrix.docgen.bench` namespace ([view code](https://github.com/mikera/core.matrix/blob/develop/src/dev/clojure/clojure/core/matrix/docgen/bench.clj)).
 
 There are several configuration options (instance type, SSH keys and bucket name).
 
@@ -64,9 +63,9 @@ make view
 
 | Option                |  Description              |
 | --------------------- | ------------------------- |
-| Instance type         | The type of instance. Refer [here](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) for more information about the type of instances available. Note: If you are benchmarking a GPU implementation, you'd need to spawn an instance which supports GPU.  |
-| Key Pair              | A pre-configured SSH key pair in AWS S3 for you to access the instance should the need arises |
-| Bucket name           | The name of the bucket where the information is stored |
+| Instance type         | The type of instance. Refer [AWS docs](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) for more information about the type of instances available. _Note_: If you are benchmarking a GPU implementation, you'd need to spawn an instance which supports GPU.  |
+| Key Pair              | A pre-configured SSH key pair in AWS S3 for you to access the instance while it is running the test bench. |
+| Bucket name           | The name of the bucket where the information will be stored. |
 
 ## Testing
 
@@ -76,6 +75,10 @@ This script has been tested on a Darwin machine.
 
 * Some way to track the progress of the benchmark (a way to "tail" the standard
 output and standard error of the script)
+* Some fallback mechanism in case the server fails to send the results to S3. Eg:
+we would not want to terminate in that case.
+* Some way to patch some other benchmark in (eg: the results from benchmarking
+    numpy / vanilla Java etc.) the reports
 * A better access key management scheme (AWS specifically discourages
     the usage of permanent keys)
 * A better way to manage configurations. Right now, instance-type, key pair and
