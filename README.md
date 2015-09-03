@@ -10,7 +10,9 @@ There are several configuration options (instance type, SSH keys and bucket name
 
 ## Example
 
-Working on it.
+[http://core.matrix.bench-t2.large.s3-website-eu-west-1.amazonaws.com/](http://core.matrix.bench-t2.large.s3-website-eu-west-1.amazonaws.com/)
+
+I ran the benchmarks using a t2.large instance.
 
 ## Dependencies
 
@@ -53,6 +55,8 @@ make public
 # 3. Run the benchmark! This will generate a file called instance.json
 # It contains the output of running aws ec2 run-instances
 # That json file is not used in any of the scripts
+# The instance will run for at least a few hours. You can safely
+# let it run on its own - it will terminate once the benchmark is done.
 make
 
 # 4. When the benchmark finishes, you can view it easily by: (Assuming it is public)
